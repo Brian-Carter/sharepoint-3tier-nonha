@@ -188,8 +188,8 @@
           "wmfVersion": "4.0",
           "configurationFunction": "[parameters('spConfigurationFunction')]",
           "properties": {
-            "domainName": "[parameters('domainName')]",
-            "adminCreds": {
+            "DomainName": "[parameters('domainName')]",
+            "Admincreds": {
               "userName": "[parameters('adminUserName')]",
               "password": "privateSettingsRef:adminPassword"
             },
