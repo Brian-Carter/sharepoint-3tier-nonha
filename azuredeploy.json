@@ -493,6 +493,9 @@
           },
           "ouPath": {
             "value": "[parameters('ouPath')]"
+          },
+          "sqlServerServiceAccountPassword": {
+            "value": "[parameters('sqlServerServiceAccountPassword')]"
           }
         }
       }
