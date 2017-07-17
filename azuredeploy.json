@@ -112,7 +112,7 @@
         "artifactsBaseUrl": "",
         "description": "URL to acquire other templates"
       },
-      "defaultValue": "https://raw.githubusercontent.com/Brian-Carter/Sharepointnon-3tier-nonha/master"
+      "defaultValue": "https://raw.githubusercontent.com/Brian-Carter/sharepoint-3tier-nonha/master"
     },
 
     "storageAccountNamePrefix": {
