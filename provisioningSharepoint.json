@@ -1,0 +1,233 @@
+﻿{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "spappVMName": {
+      "type": "string"
+    },
+    "spwebVMName": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "spPrepareModulesURL": {
+      "type": "string"
+    },
+    "spPreparationFunction": {
+      "type": "string"
+    },
+    "adminUserName": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "spVMSize": {
+      "type": "string"
+    },
+    "spappNicName": {
+      "type": "string"
+    },
+    "spwebNicName": {
+      "type": "string"
+    },
+    "storageAccountNamePrefix": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('spappVMName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('spVMSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('spappVMName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftSharePoint",
+            "offer": "MicrosoftSharePointServer",
+            "sku": "2013",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',parameters('storageAccountNamePrefix'),'1.blob.core.windows.net/vhds/',parameters('spappVMName'),'-osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://',parameters('storageAccountNamePrefix'),'1.blob.core.windows.net/vhds/',parameters('spappVMName'),'-data-disk1')]"
+              },
+              "name": "[concat(parameters('spappVMName'),'-data-disk1')]",
+              "createOption": "empty",
+              "caching": "None",
+              "diskSizeGB": 1000,
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('spappNicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',parameters('storageAccountNamePrefix'),'2.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('spappVMName'),'/FixPSModulePathIssue')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "comments": "This was added to fix an issue with the SP Image whereby the VS 2017 installer incorrectly sets up the PSModulePath evnironent variable causing the configuration to fail, this should be remvoed once DSC has implemented a fix",
+      "dependsOn": [
+        "[parameters('spappVMName')]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.8",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "commandToExecute": "powershell -ExecutionPolicy Unrestricted  -Command \"& {$modulePath=[Environment]::GetEnvironmentVariable('PSModulePath','Machine');$pathsToRemove=@('C:\\Program Files\\WindowsPowerShell\\Modules\\','C:\\Program Files\\WindowsPowerShell\\Modules');if ($modulePath) {$paths=@();$newModulePath='';foreach ($path in $modulePath.Split(';')){$path=$path.Trim('\\');if (!$paths.Contains($path)){if (!$pathsToRemove.Contains($path)) { $paths+=$path;$newModulePath+=$path;$newModulePath+='\\;';} }}[Environment]::SetEnvironmentVariable('PSModulePath',$newModulePath.Trim(';'),'Machine' );}}\""
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('spappVMName'),'/ConfigureSPAppServer')]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('spappVMName'),'/extensions/FixPSModulePathIssue')]"
+      ],
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.20",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "ModulesUrl": "[parameters('spPrepareModulesURL')]",
+          "wmfVersion": "5.0",
+          "ConfigurationFunction": "[parameters('spPreparationFunction')]"
+        }
+      }
+    },
+    {
+      "apiVersion": "2015-06-15",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[parameters('spwebVMName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('spVMSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('spwebVMName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftSharePoint",
+            "offer": "MicrosoftSharePointServer",
+            "sku": "2013",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "osdisk",
+            "vhd": {
+              "uri": "[concat('http://',parameters('storageAccountNamePrefix'),'1.blob.core.windows.net/vhds/',parameters('spwebVMName'),'-osdisk.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://',parameters('storageAccountNamePrefix'),'1.blob.core.windows.net/vhds/',parameters('spwebVMName'),'-data-disk1')]"
+              },
+              "name": "[concat(parameters('spwebVMName'),'-data-disk1')]",
+              "createOption": "empty",
+              "caching": "None",
+              "diskSizeGB": 1000,
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',parameters('spwebNicName'))]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": "true",
+            "storageUri": "[concat('http://',parameters('storageAccountNamePrefix'),'2.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('spwebVMName'),'/FixPSModulePathIssue')]",
+      "apiVersion": "2015-06-15",
+      "location": "[parameters('location')]",
+      "comments": "This was added to fix an issue with the SP Image whereby the VS 2017 installer incorrectly sets up the PSModulePath evnironent variable causing the configuration to fail, this should be remvoed once DSC has implemented a fix",
+      "dependsOn": [
+        "[parameters('spwebVMName')]"
+      ],
+      "properties": {
+        "publisher": "Microsoft.Compute",
+        "type": "CustomScriptExtension",
+        "typeHandlerVersion": "1.8",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "commandToExecute": "powershell -ExecutionPolicy Unrestricted  -Command \"& {$modulePath=[Environment]::GetEnvironmentVariable('PSModulePath','Machine');$pathsToRemove=@('C:\\Program Files\\WindowsPowerShell\\Modules\\','C:\\Program Files\\WindowsPowerShell\\Modules');if ($modulePath) {$paths=@();$newModulePath='';foreach ($path in $modulePath.Split(';')){$path=$path.Trim('\\');if (!$paths.Contains($path)){if (!$pathsToRemove.Contains($path)) { $paths+=$path;$newModulePath+=$path;$newModulePath+='\\;';} }}[Environment]::SetEnvironmentVariable('PSModulePath',$newModulePath.Trim(';'),'Machine' );}}\""
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('spwebVMName'),'/ConfigureSPWebServer')]",
+      "apiVersion": "2015-06-15",
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('spwebVMName'),'/extensions/FixPSModulePathIssue')]"
+      ],
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.20",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "ModulesUrl": "[parameters('spPrepareModulesURL')]",
+          "wmfVersion": "5.0",
+          "ConfigurationFunction": "[parameters('spPreparationFunction')]"
+        }
+      }
+    }
+  ]
+}
