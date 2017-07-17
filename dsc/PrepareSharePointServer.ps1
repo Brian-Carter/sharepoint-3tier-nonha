@@ -17,7 +17,7 @@ configuration PrepareSharePointServer
 
         Enable-CredSSPNTLM -DomainName $DomainName
 
-        Import-DscResource -ModuleName  xDisk,  xCredSSP, cDisk,xNetworking
+        Import-DscResource -ModuleName  xDisk,  xCredSSP, cDisk
     
 
         Node localhost
