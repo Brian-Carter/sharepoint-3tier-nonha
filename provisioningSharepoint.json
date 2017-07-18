@@ -134,7 +134,7 @@
       "location": "[parameters('location')]",
       "comments": "This was added to fix an issue with the SP Image whereby the VS 2017 installer incorrectly sets up the PSModulePath evnironent variable causing the configuration to fail, this should be remvoed once DSC has implemented a fix",
       "dependsOn": [
-        "[parameters('spappVMName')]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('spappVMName'), '/extensions/joindomain')]"
       ],
       "properties": {
         "publisher": "Microsoft.Compute",
@@ -260,7 +260,7 @@
       "location": "[parameters('location')]",
       "comments": "This was added to fix an issue with the SP Image whereby the VS 2017 installer incorrectly sets up the PSModulePath evnironent variable causing the configuration to fail, this should be remvoed once DSC has implemented a fix",
       "dependsOn": [
-        "[parameters('spwebVMName')]"
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('spwebVMName'), '/extensions/joindomain')]"
       ],
       "properties": {
         "publisher": "Microsoft.Compute",
