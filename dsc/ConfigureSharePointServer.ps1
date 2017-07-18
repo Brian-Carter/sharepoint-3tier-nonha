@@ -64,6 +64,7 @@ configuration ConfigureSharePointServer
         LocalConfigurationManager
         {
             RebootNodeIfNeeded = $true
+            DebugMode = $true
         }
 
         xWaitForADDomain DscForestWait
