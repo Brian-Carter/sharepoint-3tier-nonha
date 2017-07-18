@@ -109,10 +109,6 @@
               "Password": "PrivateSettingsRef:SharePointFarmPassphrasePassword"
             },
             "databaseName": "[parameters('configDatabaseName')]",
-            "databaseNames": [
-              "[parameters('administrationContentDatabaseName')]",
-              "[parameters('configDatabaseName')]"
-            ],
             "AdministrationContentDatabaseName": "[parameters('administrationContentDatabaseName')]",
             "DatabaseServer": "[concat(parameters('sqlVMName'),'.',parameters('domainName'))]",
             "configuration": "[concat('{\"roles\":[{\"type\":\"application\",\"properties\":{\"fqdn\":\"',parameters('sharepointCAfqdn'),'\",\"port\":80}}],\"configureForHa\":\"False\",\"loadBalancedSetProbePort\":0}')]"
