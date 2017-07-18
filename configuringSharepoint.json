@@ -130,6 +130,7 @@
       "apiVersion": "2015-06-15",
       "location": "[parameters('location')]",
       "dependson": [
+        "[concat('Microsoft.Compute/virtualMachines/', parameters('spappVMName'),'/extensions/ConfigureSPAppServer')]"
       ],
       "properties": {
         "publisher": "Microsoft.Powershell",
@@ -137,8 +138,8 @@
         "typeHandlerVersion": "2.24",
         "autoUpgradeMinorVersion": false,
         "settings": {
-          "modulesURL": "[parameters('spConfigureModulesURL')]",
-          "wmfVersion": "4.0",
+          "modulesUrl": "[parameters('spConfigureModulesURL')]",
+          "wmfVersion": "5.0",
           "configurationFunction": "[parameters('spConfigurationFunction')]",
           "Properties": {
             "domainName": "[parameters('domainName')]",
