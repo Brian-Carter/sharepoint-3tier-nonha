@@ -53,6 +53,8 @@ configuration ConfigureSharePointServer
 
     $SQLCLRPath="${PSScriptRoot}\SQLSysClrTypes.msi"
     $SMOPath="${PSScriptRoot}\SharedManagementObjects.msi"
+    
+    Enable-CredSSPNTLM -DomainName $DomainName
 
     Import-DscResource -ModuleName xComputerManagement, xActiveDirectory, cConfigureSharepoint, xCredSSP
 
