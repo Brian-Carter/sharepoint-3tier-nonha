@@ -181,7 +181,10 @@
     "spDataDiskSize": 1000,
     "sqlpublicIPAddressName": "sqlpublicIP",
     "spCentralAdminPort": 8080,
+    "spCADNSPrefix": "[concat(parameters('spDNSPrefix'),'admin')]",
     "spFQDN": "[concat(parameters('spDNSPrefix'),'.',parameters('domainName'))]",
+    "sharepointCAfqdn": "[concat(variables('spCADNSPrefix'),'.',parameters('domainName'))]",
+    "sharepointWebfqdn": "[concat(parameters('spdnsPrefix'),'.',parameters('domainName'))]",
     "sqlConfigureModulesURL": "[concat(variables('assetLocation'),'/ConfigureSqlServer.ps1.zip')]",
     "sqlConfigurationFunction": "ConfigureSqlServer.ps1\\ConfigureSqlServer",
     "spConfigureModulesURL": "[concat(variables('assetLocation'),'/ConfigureSharePointServer.ps1.zip')]",
@@ -497,7 +500,12 @@
           "sharepointFarmName": {
             "value": "[parameters('sharepointFarmName')]"
           },
-
+          "sharepointCAfqdn": {
+            "value": "[variables('sharepointCAfqdn')]"
+          },
+          "sharepointWebfqdn": {
+            "value": "[variables('sharepointWebfqdn')]"
+          },
           "sqlServerServiceAccountPassword": {
             "value": "[parameters('sqlServerServiceAccountPassword')]"
           }
@@ -507,7 +515,11 @@
   ],
   "outputs": {
     "fqdn": {
-      "value": "[variables('spFQDN')]",
+      "value": "[variables('sharepointWebfqdn')]",
+      "type": "string"
+    },
+    "cafqdn": {
+      "value": "[variables('sharepointCAfqdn')]",
       "type": "string"
     }
   }

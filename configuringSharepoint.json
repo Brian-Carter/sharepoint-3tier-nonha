@@ -65,6 +65,12 @@
     },
     "sharepointFarmName": {
       "type": "string"
+    },
+    "sharepointWebfqdn": {
+      "type": "string"
+    },
+    "sharepointCAfqdn": {
+      "type": "string"
     }
   },
   "resources": [
@@ -102,10 +108,14 @@
               "UserName": "ignore",
               "Password": "PrivateSettingsRef:SharePointFarmPassphrasePassword"
             },
-            "DatabaseName": "[parameters('configDatabaseName')]",
+            "databaseName": "[parameters('configDatabaseName')]",
+            "databaseNames": [
+              "[parameters('administrationContentDatabaseName')]",
+              "[parameters('configDatabaseName')]"
+            ],
             "AdministrationContentDatabaseName": "[parameters('administrationContentDatabaseName')]",
             "DatabaseServer": "[concat(parameters('sqlVMName'),'.',parameters('domainName'))]",
-            "configuration": "[concat('{\"roles\":[{\"type\":\"application\",\"properties\":{\"fqdn\":\"',parameters('fqdn'),'\",\"port\":8080}}],\"configureForHa\":\"False\",\"loadBalancedSetProbePort\":0}')]"
+            "configuration": "[concat('{\"roles\":[{\"type\":\"application\",\"properties\":{\"fqdn\":\"',parameters('sharepointCAfqdn'),'\",\"port\":80}}],\"configureForHa\":\"False\",\"loadBalancedSetProbePort\":0}')]"
           }
         },
         "protectedSettings": {
@@ -152,10 +162,10 @@
               "userName": "ignore",
               "password": "privateSettingsRef:sharePointFarmPassphrasePassword"
             },
-            "DatabaseName": "[parameters('configDatabaseName')]",
-            "AdministrationContentDatabaseName": "[parameters('administrationContentDatabaseName')]",
+            "databaseName": "[parameters('configDatabaseName')]",
+            "administrationContentDatabaseName": "[parameters('administrationContentDatabaseName')]",
             "DatabaseServer": "[concat(parameters('sqlVMName'),'.',parameters('domainName'))]",
-            "Configuration": "[concat('{\"roles\":[{\"type\":\"web\",\"properties\":{\"webApp\":{\"name\":\"',parameters('sharepointFarmName'),'\",\"applicationPool\":\"',parameters('sharepointFarmName'),' AppPool\",\"applicationPoolAccount\":\"', parameters('sharePointFarmAccountUserName'),'\",\"url\":\"http://',parameters('fqdn'),'\",\"port\":80,\"hostHeader\":\"',parameters('fqdn'),'\",\"databaseName\":\"',parameters('contentDatabaseName'),'\"},\"site\":{\"name\":\"',parameters('sharepointFarmName'),'\",\"template\":\"',parameters('spSiteTemplateName'),'\",\"url\":\"http://',parameters('fqdn'),'\",\"ownerAliasDomain\":\"',parameters('domainName'),'\",\"ownerAliasUserName\":\"',parameters('sharePointFarmAccountUserName'),'\",\"secondaryOwnerAliasDomain\":\"',parameters('domainName'),'\",\"secondaryOwnerAliasUserName\":\"',parameters('adminUserName'),'\"}}}],\"configureForHa\":\"False\",\"loadBalancedSetProbePort\":0}')]"
+            "configuration": "[concat('{\"roles\":[{\"type\":\"web\",\"properties\":{\"webApp\":{\"name\":\"',parameters('sharepointFarmName'),'\",\"applicationPool\":\"',parameters('sharepointFarmName'),' AppPool\",\"applicationPoolAccount\":\"', parameters('sharePointFarmAccountUserName'),'\",\"url\":\"http://',parameters('sharepointWebfqdn'),'\",\"port\":80,\"hostHeader\":\"',parameters('sharepointWebfqdn'),'\",\"databaseName\":\"',parameters('contentDatabaseName'),'\"},\"site\":{\"name\":\"',parameters('sharepointFarmName'),'\",\"template\":\"',parameters('spSiteTemplateName'),'\",\"url\":\"http://',parameters('sharepointWebfqdn'),'\",\"ownerAliasDomain\":\"',parameters('domainName'),'\",\"ownerAliasUserName\":\"',parameters('sharePointFarmAccountUserName'),'\",\"secondaryOwnerAliasDomain\":\"',parameters('domainName'),'\",\"secondaryOwnerAliasUserName\":\"',parameters('adminUserName'),'\"}}}],\"configureForHa\":\"False\",\"loadBalancedSetProbePort\":0}')]"
           }
         },
         "protectedSettings": {
