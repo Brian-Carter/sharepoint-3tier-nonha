@@ -358,6 +358,9 @@
           },
           "storageAccountNamePrefix": {
             "value": "[parameters('storageAccountNamePrefix')]"
+          },
+          "domainName": {
+            "value": "[parameters('domainName')]"
           }
         }
       }

@@ -6,7 +6,7 @@ configuration ConfigureSharePointServer
     param
     (
         [Parameter(Mandatory)]
-        [String]$DomainName,
+        [String]$domainName,
 
         [Parameter(Mandatory)]
         [System.Management.Automation.PSCredential]$Admincreds,

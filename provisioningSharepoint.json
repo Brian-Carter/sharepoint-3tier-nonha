@@ -34,6 +34,9 @@
     },
     "storageAccountNamePrefix": {
       "type": "string"
+    },
+    "domainName": {
+      "type": "string"
     }
   },
   "resources": [
@@ -92,7 +95,34 @@
             "storageUri": "[concat('http://',parameters('storageAccountNamePrefix'),'2.blob.core.windows.net')]"
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2016-03-30",
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(parameters('spappVMName'),'/joindomain')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('spappVMName'))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "JsonADDomainExtension",
+            "typeHandlerVersion": "1.3",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Name": "[parameters('domainName')]",
+              "OUPath": "[parameters('ouPath')]",
+              "User": "[concat(parameters('adminUserName'), '@', parameters('domainname'))]",
+              "Restart": "true",
+              "Options": 3
+            },
+            "protectedSettings": {
+              "Password": "[parameters('adminPassword')]"
+            }
+          }
+        }
+      ]
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -129,7 +159,10 @@
         "settings": {
           "ModulesUrl": "[parameters('spPrepareModulesURL')]",
           "wmfVersion": "5.0",
-          "ConfigurationFunction": "[parameters('spPreparationFunction')]"
+          "ConfigurationFunction": "[parameters('spPreparationFunction')]",
+          "Properties": {
+            "domainName": "[parameters('domainName')]"
+          }
         }
       }
     },
@@ -188,7 +221,34 @@
             "storageUri": "[concat('http://',parameters('storageAccountNamePrefix'),'2.blob.core.windows.net')]"
           }
         }
-      }
+      },
+      "resources": [
+        {
+          "apiVersion": "2016-03-30",
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(parameters('spwebVMName'),'/joindomain')]",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', parameters('spwebVMName'))]"
+          ],
+          "properties": {
+            "publisher": "Microsoft.Compute",
+            "type": "JsonADDomainExtension",
+            "typeHandlerVersion": "1.3",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "Name": "[parameters('domainName')]",
+              "OUPath": "[parameters('ouPath')]",
+              "User": "[concat(parameters('adminUserName'), '@', parameters('domainname'))]",
+              "Restart": "true",
+              "Options": 3
+            },
+            "protectedSettings": {
+              "Password": "[parameters('adminPassword')]"
+            }
+          }
+        }
+      ]
     },
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -225,7 +285,10 @@
         "settings": {
           "ModulesUrl": "[parameters('spPrepareModulesURL')]",
           "wmfVersion": "5.0",
-          "ConfigurationFunction": "[parameters('spPreparationFunction')]"
+          "ConfigurationFunction": "[parameters('spPreparationFunction')]",
+          "Properties": {
+            "domainName": "[parameters('domainName')]"
+          }
         }
       }
     }

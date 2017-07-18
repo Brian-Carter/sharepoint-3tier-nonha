@@ -8,7 +8,7 @@ configuration PrepareSharePointServer
     param
     (
         [Parameter(Mandatory)]
-        [String]$DomainName,
+        [String]$domainName,
 
 
         [Int]$RetryCount=30,
