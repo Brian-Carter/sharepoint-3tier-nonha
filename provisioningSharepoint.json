@@ -37,6 +37,9 @@
     },
     "domainName": {
       "type": "string"
+    },
+    "ouPath": {
+      "type": "string"
     }
   },
   "resources": [

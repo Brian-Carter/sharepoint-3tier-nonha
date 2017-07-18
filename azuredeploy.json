@@ -361,6 +361,9 @@
           },
           "domainName": {
             "value": "[parameters('domainName')]"
+          },
+          "ouPath": {
+            "value": "[parameters('ouPath')]"
           }
         }
       }
@@ -494,9 +497,7 @@
           "sharepointFarmName": {
             "value": "[parameters('sharepointFarmName')]"
           },
-          "ouPath": {
-            "value": "[parameters('ouPath')]"
-          },
+
           "sqlServerServiceAccountPassword": {
             "value": "[parameters('sqlServerServiceAccountPassword')]"
           }

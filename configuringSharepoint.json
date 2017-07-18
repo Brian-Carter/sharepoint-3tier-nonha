@@ -65,9 +65,6 @@
     },
     "sharepointFarmName": {
       "type": "string"
-    },
-    "ouPath": {
-      "type": "string"
     }
   },
   "resources": [
