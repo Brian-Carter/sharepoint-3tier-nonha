@@ -159,7 +159,7 @@
               "userName": "ignore",
               "password": "privateSettingsRef:sharePointFarmPassphrasePassword"
             },
-            "databaseName": "[parameters('configDatabaseName')]",
+            "databaseName": "[parameters('contentDatabaseName')]",
             "administrationContentDatabaseName": "[parameters('administrationContentDatabaseName')]",
             "DatabaseServer": "[concat(parameters('sqlVMName'),'.',parameters('domainName'))]",
             "configuration": "[concat('{\"roles\":[{\"type\":\"web\",\"properties\":{\"webApp\":{\"name\":\"',parameters('sharepointFarmName'),'\",\"applicationPool\":\"',parameters('sharepointFarmName'),' AppPool\",\"applicationPoolAccount\":\"', parameters('sharePointFarmAccountUserName'),'\",\"url\":\"http://',parameters('sharepointWebfqdn'),'\",\"port\":80,\"hostHeader\":\"',parameters('sharepointWebfqdn'),'\",\"databaseName\":\"',parameters('contentDatabaseName'),'\"},\"site\":{\"name\":\"',parameters('sharepointFarmName'),'\",\"template\":\"',parameters('spSiteTemplateName'),'\",\"url\":\"http://',parameters('sharepointWebfqdn'),'\",\"ownerAliasDomain\":\"',parameters('domainName'),'\",\"ownerAliasUserName\":\"',parameters('sharePointFarmAccountUserName'),'\",\"secondaryOwnerAliasDomain\":\"',parameters('domainName'),'\",\"secondaryOwnerAliasUserName\":\"',parameters('adminUserName'),'\"}}}],\"configureForHa\":\"False\",\"loadBalancedSetProbePort\":0}')]"
